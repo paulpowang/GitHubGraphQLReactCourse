@@ -6,22 +6,29 @@ import RepoInfo from "./RepoInfo";
 function App() {
   let [userName, setUserName] = useState("");
   let [repoList, setRepoList] = useState(null);
+  let [pageCount, setPageCount] = useState(10);
+  let [queryString, setQueryString] = useState("slides");
+  let [totalCount, setTotalCount] = useState(null);
 
   const fetchData = useCallback(() => {
+    const queryText = JSON.stringify(query(pageCount, queryString));
+
     fetch(github.baseURL, {
       method: "POST",
       headers: github.headers,
-      body: JSON.stringify(query),
+      body: queryText,
     })
       .then((response) => response.json)
       .then((data) => {
         const viewer = data.data.viewer;
         const repo = data.data.search.nodes;
+        const total = data.data.search.repositoryCount;
         setUserName(viewer.name);
         setRepoList(repo);
+        setTotalCount(total);
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [pageCount, queryString]);
 
   useEffect(() => {
     fetchData();
@@ -34,7 +41,12 @@ function App() {
         Repos
       </h1>
       <p>Hey there {userName}</p>
-
+      <p>
+        <b>Search For:</b>
+        {queryString} |<b>Items per page:</b>
+        {pageCount} |<b>Total Results:</b>
+        {totalCount}
+      </p>
       {repoList && (
         <ul className="list-group list-group-flush">
           {repoList.map((repo) => (
