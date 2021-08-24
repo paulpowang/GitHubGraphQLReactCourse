@@ -2,6 +2,7 @@ import github from "./db";
 import { useEffect, useState, useCallback } from "react";
 import query from "./Query";
 import RepoInfo from "./RepoInfo";
+import SearchBox from "./SearchBox";
 
 function App() {
   let [userName, setUserName] = useState("");
@@ -41,6 +42,17 @@ function App() {
         Repos
       </h1>
       <p>Hey there {userName}</p>
+      <SearchBox
+        totalCount={totalCount}
+        pageCount={pageCount}
+        queryString={queryString}
+        onQueryChange={(myString) => {
+          setQueryString(myString);
+        }}
+        onTotalChange={(myTotal) => {
+          setPageCount(myTotal);
+        }}
+      />
       <p>
         <b>Search For:</b>
         {queryString} |<b>Items per page:</b>
